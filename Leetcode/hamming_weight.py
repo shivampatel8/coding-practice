@@ -5,6 +5,8 @@ class Solution(object):
         :type n: int
         :rtype: int
         """
+        binary = bin(n)[2:]
+        print(binary)
         x = 1
         count = 0
         while n!=0:
