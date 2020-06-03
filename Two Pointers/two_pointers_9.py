@@ -11,7 +11,7 @@ def search_quadruplets(arr, target):
   return quadruplets
 
 def search_triplets(arr,target_sum,left,quadruplets,cur_num):
-  for i in range(len(arr)):
+  for i in range(left,len(arr)):
   # while left<right:
     if i > 0 and arr[i] == arr[i-1]:
       continue
