@@ -8,18 +8,6 @@ class Interval:
     def print_interval(self):
         print("[" + str(self.start) + ", " + str(self.end) + "]", end='')
 
-
-def find_employee_free_time(schedule):
-    result = []
-    intervals = schedule[0]
-    for i in range(1,len(schedule)):
-        for j in range(len(schedule[i])):
-            intervals = insert(intervals,schedule[i][j])
-    for i in range(len(intervals)-1):
-        result.append(Interval(intervals[i].end, intervals[i+1].start))
-    # TODO: Write your code here
-    return result
-
 def insert(intervals, new_interval):
   merged = []
   i, start, end = 0, 0, 1
@@ -37,6 +25,48 @@ def insert(intervals, new_interval):
     merged.append(intervals[i])
     i += 1
   return merged
+
+def find_employee_free_time(schedule):
+    result = []
+    intervals = schedule[0]
+    for i in range(1,len(schedule)):
+        for j in range(len(schedule[i])):
+            intervals = insert(intervals,schedule[i][j])
+    for i in range(len(intervals)-1):
+        result.append(Interval(intervals[i].end, intervals[i+1].start))
+    # TODO: Write your code here
+    return result
+
+def find_employee_free_time_heap(schedule):
+    if schedule is None:
+        return []
+
+    n = len(schedule)
+    result, minHeap = [], []
+
+    # insert the first interval of each employee to the queue
+    for i in range(n):
+        heappush(minHeap, EmployeeInterval(schedule[i][0], i, 0))
+
+    previousInterval = minHeap[0].interval
+    while minHeap:
+        queueTop = heappop(minHeap)
+        # if previousInterval is not overlapping with the next interval, insert a free interval
+        if previousInterval.end < queueTop.interval.start:
+            result.append(Interval(previousInterval.end,
+                                   queueTop.interval.start))
+            previousInterval = queueTop.interval
+        else:  # overlapping intervals, update the previousInterval if needed
+            if previousInterval.end < queueTop.interval.end:
+                previousInterval = queueTop.interval
+
+        # if there are more intervals available for the same employee, add their next interval
+        employeeSchedule = schedule[queueTop.employeeIndex]
+        if len(employeeSchedule) > queueTop.intervalIndex + 1:
+            heappush(minHeap, EmployeeInterval(employeeSchedule[queueTop.intervalIndex + 1], queueTop.employeeIndex,
+                                               queueTop.intervalIndex + 1))
+
+    return result
 
 def main():
 
